@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>⚽ 서이초 발야구 리그 결승전</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══════════════ 타이틀 화면 ═══════════════ -->
+  <section id="screen-title" class="screen active">
+    <div class="stadium-lights"><span></span><span></span><span></span><span></span></div>
+    <div class="title-wrap">
+      <div class="title-badge">SEOI ELEMENTARY KICKBALL LEAGUE</div>
+      <div class="title-logo" id="title-logo">
+        <!-- assets/title.png 이 있으면 자동 표시, 없으면 이모지 대체 -->
+      </div>
+      <h1 class="title-main">서이초 발야구<br><span class="title-final">결승전</span></h1>
+      <p class="title-sub">규칙을 아는 자가 우승컵을 든다 🏆</p>
+
+      <div class="name-box">
+        <label for="player-name">플레이어 이름</label>
+        <input type="text" id="player-name" maxlength="10" placeholder="이름을 입력하세요" autocomplete="off">
+      </div>
+
+      <div class="name-box class-box">
+        <div class="class-field">
+          <label for="my-class">우리 반</label>
+          <input type="text" id="my-class" maxlength="12" autocomplete="off">
+        </div>
+        <div class="class-vs">VS</div>
+        <div class="class-field">
+          <label for="opp-class">상대 반</label>
+          <input type="text" id="opp-class" maxlength="12" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="mode-box">
+        <button class="mode-btn selected" data-mode="final" id="mode-final">
+          <span class="mode-icon">🏆</span>
+          <span class="mode-name">결승전 (토너먼트)</span>
+          <span class="mode-desc">동점이면 연장전으로 승부!</span>
+        </button>
+        <button class="mode-btn" data-mode="group" id="mode-group">
+          <span class="mode-icon">📋</span>
+          <span class="mode-name">조별 예선</span>
+          <span class="mode-desc">동점이면 무승부 처리</span>
+        </button>
+      </div>
+
+      <button id="btn-start" class="btn-big btn-start">경기 입장 ▶</button>
+      <button id="btn-achievements" class="btn-ghost">🎖️ 나의 업적 보기</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 경기 화면 ═══════════════ -->
+  <section id="screen-game" class="screen">
+
+    <!-- 전자 전광판 -->
+    <header id="scoreboard" class="scoreboard">
+      <div class="sb-row sb-top">
+        <div class="sb-inning" id="sb-inning">1회초</div>
+        <div class="sb-phase" id="sb-phase">공격</div>
+        <div class="sb-outs" id="sb-outs">
+          <span class="out-lamp"></span><span class="out-lamp"></span><span class="out-lamp"></span>
+          <em>OUT</em>
+        </div>
+      </div>
+      <div class="sb-row sb-score">
+        <div class="sb-team">
+          <span class="sb-team-name" id="sb-name-me">우리 팀</span>
+          <span class="sb-num" id="sb-score-me">0</span>
+        </div>
+        <div class="sb-vs">:</div>
+        <div class="sb-team">
+          <span class="sb-num" id="sb-score-opp">0</span>
+          <span class="sb-team-name" id="sb-name-opp">상대 팀</span>
+        </div>
+      </div>
+      <div class="sb-mini-diamond" id="sb-mini-diamond" title="주자 상황">
+        <span class="mini-base mb-2" id="mb-2"></span>
+        <span class="mini-base mb-3" id="mb-3"></span>
+        <span class="mini-base mb-1" id="mb-1"></span>
+      </div>
+    </header>
+
+    <!-- 운동장 -->
+    <div id="field" class="field">
+      <div class="crowd" id="crowd" aria-hidden="true"></div>
+      <div class="diamond">
+        <div class="baseline bl-13"></div>
+        <div class="infield"></div>
+        <div class="base base-2" id="base-2"><span class="runner" id="runner-2"></span></div>
+        <div class="base base-3" id="base-3"><span class="runner" id="runner-3"></span></div>
+        <div class="base base-1" id="base-1"><span class="runner" id="runner-1"></span></div>
+        <div class="base base-home" id="base-home">⬜</div>
+        <div class="mound" id="mound">
+          <span class="pitcher" id="pitcher-icon"></span>
+        </div>
+        <div class="batter-spot" id="batter-spot"><span class="batter" id="batter-icon"></span></div>
+        <div class="ball" id="ball">⚽</div>
+      </div>
+      <div class="cheer-layer" id="cheer-layer"></div>
+    </div>
+
+    <!-- 상황 카드 -->
+    <div id="situation" class="situation">
+      <div class="situ-head">
+        <span class="situ-icon" id="situ-icon">📣</span>
+        <span class="situ-title" id="situ-title">경기 시작!</span>
+      </div>
+      <div class="situ-bubble" id="situ-text">플레이 볼! ⚽</div>
+      <div class="situ-choices" id="situ-choices"></div>
+      <button id="btn-next" class="btn-big btn-next">다음 상황 ▶</button>
+    </div>
+
+    <!-- 경기 기록 티커 -->
+    <div class="ticker"><div class="ticker-track" id="ticker-track">📢 서이초 발야구 리그에 오신 것을 환영합니다!</div></div>
+
+    <div class="game-footer">
+      <button id="btn-sound" class="btn-mini" title="효과음 켜기/끄기">🔊</button>
+      <button id="btn-quit" class="btn-mini" title="경기 포기">🏳️</button>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VAR 판독 오버레이 ═══════════════ -->
+  <div id="var-overlay" class="overlay">
+    <div class="var-box">
+      <div class="var-live">● REC</div>
+      <div class="var-title">📺 VAR 비디오 판독</div>
+      <div class="var-screen">
+        <div class="scanlines"></div>
+        <div class="var-replay" id="var-replay">🐢 슬로우 모션 리플레이...</div>
+      </div>
+      <div class="var-verdict" id="var-verdict">판정: 규칙 위반!</div>
+      <div class="var-explain" id="var-explain"></div>
+      <div class="var-rule" id="var-rule"></div>
+      <button id="btn-var-ok" class="btn-big">확인했습니다 ✔</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════ 엔딩 화면 ═══════════════ -->
+  <section id="screen-ending" class="screen">
+    <div class="ending-wrap">
+      <div class="ending-confetti" id="ending-confetti"></div>
+      <div class="ending-trophy" id="ending-trophy"></div>
+      <div class="ending-grade" id="ending-grade">S</div>
+      <h2 class="ending-title" id="ending-title">MVP 플레이어</h2>
+      <p class="ending-msg" id="ending-msg"></p>
+      <div class="ending-stats" id="ending-stats"></div>
+      <div class="ending-rules" id="ending-rules"></div>
+      <div class="ending-achv" id="ending-achv"></div>
+      <div class="ending-btns">
+        <button id="btn-replay" class="btn-big">🔁 한 경기 더!</button>
+        <button id="btn-home" class="btn-ghost">🏠 처음으로</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 업적 모달 ═══════════════ -->
+  <div id="achv-modal" class="overlay">
+    <div class="achv-box">
+      <h3>🎖️ 업적</h3>
+      <div id="achv-list" class="achv-list"></div>
+      <button id="btn-achv-close" class="btn-big">닫기</button>
+    </div>
+  </div>
+
+  <!-- 업적 달성 팝업 -->
+  <div id="achv-popup" class="achv-popup"></div>
+
+  <!-- 토스트 -->
+  <div id="toast" class="toast"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/events.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
